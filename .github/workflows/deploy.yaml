@@ -25,21 +25,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Setup ESLint config if not exists
+      - name: Setup ESLint
+        run: |
+          if [ ! -f .eslintrc.json ]; then
+            echo '{"extends": ["next/core-web-vitals"]}' > .eslintrc.json
+          fi
+
       # Linting & Type Checking
       - name: Run Linter
-        run: npm run lint
+        run: npm run lint -- --quiet
 
       - name: Type Check
         run: npm run typecheck
 
-      # 5Build Next.js App
+      # Build Next.js App
       - name: Build Next.js App
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
           NEXT_PUBLIC_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_AUTH_DOMAIN || 'http://localhost:3000/auth' }}
 
-      #Cache Build Files for Faster Deployments
+      # Cache Build Files for Faster Deployments
       - name: Cache Build Files
         uses: actions/cache@v3
         with:

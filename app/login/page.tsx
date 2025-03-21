@@ -25,7 +25,6 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Login form submitted:", formData)
     // This would be connected to your backend authentication system
     alert("Login functionality will be implemented by the backend team")
   }
@@ -57,7 +56,7 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold mb-4">Log in</h1>
 
           <div className="flex items-center mb-8">
-            <p className="text-gray-700">Don't have an account?</p>
+            <p className="text-gray-700">Don&apos;t have an account?</p>
             <Link href="/signup" className="ml-2 font-bold text-black hover:underline">
               Sign up
             </Link>
@@ -154,4 +153,3 @@ export default function LoginPage() {
     </div>
   )
 }
-

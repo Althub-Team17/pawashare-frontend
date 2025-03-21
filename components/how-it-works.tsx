@@ -3,6 +3,7 @@ export function HowItWorks() {
     <section id="how-it-works" className="py-16 bg-emerald-50">
       <div className="container">
         <h2 className="text-3xl font-bold mb-12 text-center">How It Works</h2>
+        <p>Here&apos;s how our system works to connect you with solar energy.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white p-8 rounded-lg shadow-md">
@@ -36,4 +37,3 @@ export function HowItWorks() {
     </section>
   )
 }
-

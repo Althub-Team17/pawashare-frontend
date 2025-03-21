@@ -11,6 +11,9 @@ export function Faq() {
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-left">How do I get started with running a battery?</AccordionTrigger>
               <AccordionContent>
+                <p>Here&apos;s what you need to know about our service.</p>
+                <p>We&apos;re here to help you understand solar energy sharing.</p>
+                <p>Let&apos;s make renewable energy accessible to everyone.</p>
                 Getting started is easy! Simply create an account, complete our quick assessment to determine your
                 energy needs or generation capacity, and our team will guide you through the setup process. We'll help
                 you choose the right plan and connect you with the appropriate energy partners in your area.
@@ -64,4 +67,3 @@ export function Faq() {
     </section>
   )
 }
-

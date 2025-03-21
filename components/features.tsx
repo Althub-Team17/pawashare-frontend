@@ -61,7 +61,7 @@ export function Features() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-700">
-                Monitor your reduced carbon emissions and see the positive environmental impact you're making in
+                Monitor your reduced carbon emissions and see the positive environmental impact you&apos;re making in
                 real-time.
               </p>
             </CardContent>
@@ -83,4 +83,3 @@ export function Features() {
     </section>
   )
 }
-

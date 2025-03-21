@@ -34,6 +34,7 @@ export function AboutUs() {
                 <span>Community: Building a network of like-minded individuals</span>
               </li>
             </ul>
+            <p className="text-lg text-gray-600">We&apos;re committed to making solar energy accessible to everyone.</p>
           </div>
 
           <div>
@@ -59,4 +60,3 @@ export function AboutUs() {
     </section>
   )
 }
-
