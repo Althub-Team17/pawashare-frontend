@@ -21,17 +21,48 @@ export default function SignupPage() {
     firstName: "",
     lastName: "",
     email: "",
+    username: "",
     password: "",
     agreeToTerms: false,
   })
 
+  const [formErrors, setFormErrors] = useState({
+    username: "",
+  })
+
+  const validateUsername = (username: string) => {
+    if (!/^[a-zA-Z0-9]+$/.test(username)) {
+      return "Username can only contain letters and numbers"
+    }
+    return ""
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    
+    // Validate username on change
+    if (name === 'username') {
+      const error = validateUsername(value)
+      setFormErrors(prev => ({ ...prev, username: error }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate username before submission
+    const usernameError = validateUsername(formData.username)
+    if (usernameError) {
+      setFormErrors(prev => ({ ...prev, username: usernameError }))
+      toast({
+        title: "Error",
+        description: usernameError,
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -39,11 +70,12 @@ export default function SignupPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          firstname: formData.firstName,
+          lastname: formData.lastName,
           email: formData.email,
+          username: formData.username,
           password: formData.password,
-          userType,
+          // userType,
         }),
       })
 
@@ -177,6 +209,23 @@ export default function SignupPage() {
                 required
                 disabled={isLoading}
               />
+            </div>
+
+            {/* Username field */}
+            <div className="mb-4">
+              <Input
+                name="username"
+                type="text"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Username (letters and numbers only)"
+                className={`rounded-lg h-12 ${formErrors.username ? 'border-red-500' : ''}`}
+                required
+                disabled={isLoading}
+              />
+              {formErrors.username && (
+                <p className="text-red-500 text-sm mt-1">{formErrors.username}</p>
+              )}
             </div>
 
             {/* Password field */}
