@@ -1,18 +1,22 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { EyeIcon } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function SignupPage() {
+  const router = useRouter()
+  const { toast } = useToast()
   const [userType, setUserType] = useState<"lender" | "borrower">("lender")
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -26,11 +30,51 @@ export default function SignupPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Form submitted:", { userType, ...formData })
-    // This would be connected to your backend authentication system
-    alert("Account creation functionality will be implemented by the backend team")
+    setIsLoading(true)
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          userType,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed")
+      }
+
+      // Store token if provided
+      if (data.token) {
+        localStorage.setItem("token", data.token)
+      }
+
+      toast({
+        title: "Success",
+        description: "Account created successfully",
+        variant: "default",
+      })
+
+      // Redirect to dashboard or home
+      router.push("/")
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create account",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -77,6 +121,7 @@ export default function SignupPage() {
                     : "bg-gray-200 hover:bg-gray-300 text-black"
                 }`}
                 onClick={() => setUserType("lender")}
+                disabled={isLoading}
               >
                 Lender
               </Button>
@@ -88,6 +133,7 @@ export default function SignupPage() {
                     : "bg-gray-200 hover:bg-gray-300 text-black"
                 }`}
                 onClick={() => setUserType("borrower")}
+                disabled={isLoading}
               >
                 Borrower
               </Button>
@@ -103,6 +149,7 @@ export default function SignupPage() {
                   placeholder="First name"
                   className="rounded-lg h-12"
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div>
@@ -113,37 +160,44 @@ export default function SignupPage() {
                   placeholder="Last name"
                   className="rounded-lg h-12"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
             {/* Email field */}
-            <div className="mb-4 relative">
+            <div className="mb-4">
               <Input
                 name="email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email"
-                className="rounded-lg h-12 pr-10"
+                className="rounded-lg h-12"
                 required
+                disabled={isLoading}
               />
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <EyeIcon className="h-5 w-5 text-gray-400" />
-              </div>
             </div>
 
             {/* Password field */}
-            <div className="mb-6">
+            <div className="mb-6 relative">
               <Input
                 name="password"
                 type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your password"
-                className="rounded-lg h-12"
+                className="rounded-lg h-12 pr-10"
                 required
+                disabled={isLoading}
               />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <EyeIcon className="h-5 w-5 text-gray-400" />
+              </button>
             </div>
 
             {/* Terms checkbox */}
@@ -153,6 +207,7 @@ export default function SignupPage() {
                 checked={formData.agreeToTerms}
                 onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, agreeToTerms: checked as boolean }))}
                 className="h-6 w-6 rounded-sm border-gray-300"
+                disabled={isLoading}
               />
               <label htmlFor="terms" className="ml-2 text-sm">
                 I agree to the Terms and Conditions
@@ -163,9 +218,9 @@ export default function SignupPage() {
             <Button
               type="submit"
               className="w-full bg-green-800 hover:bg-green-900 text-white h-12 rounded-lg mb-8"
-              disabled={!formData.agreeToTerms}
+              disabled={!formData.agreeToTerms || isLoading}
             >
-              Create account
+              {isLoading ? "Creating account..." : "Create account"}
             </Button>
 
             {/* Social login divider */}
@@ -180,6 +235,7 @@ export default function SignupPage() {
               <Button
                 type="button"
                 className="bg-green-800 hover:bg-green-900 text-white rounded-lg flex items-center justify-center gap-2"
+                disabled={isLoading}
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
@@ -189,6 +245,7 @@ export default function SignupPage() {
               <Button
                 type="button"
                 className="bg-green-800 hover:bg-green-900 text-white rounded-lg flex items-center justify-center gap-2"
+                disabled={isLoading}
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9.101,23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085,1.848-5.978,5.858-5.978c0.401,0,0.955,0.042,1.569,0.103 c0.645,0.06,1.405,0.241,2.273,0.541v3.461c-0.575-0.043-1.051-0.043-1.43-0.043c-1.87,0-2.511,0.811-2.511,2.47v1.026h3.803 l-0.546,3.667h-3.257v7.98H9.101z" />
@@ -202,4 +259,3 @@ export default function SignupPage() {
     </div>
   )
 }
-

@@ -40,10 +40,14 @@ export default function Home() {
             </Link>
           </nav>
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-sm">
-              Login
-            </Button>
-            <Button className="bg-emerald-700 hover:bg-emerald-800 text-white">Sign up</Button>
+            <Link href="/login">
+              <Button variant="ghost" className="text-sm">
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button className="bg-emerald-700 hover:bg-emerald-800 text-white">Sign up</Button>
+            </Link>
           </div>
           <MobileNav />
         </div>
@@ -68,12 +72,16 @@ export default function Home() {
               through our innovative platform.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
-                Get Started
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20">
-                Learn More
-              </Button>
+              <Link href="/signup">
+                <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
+                  Get Started
+                </Button>
+              </Link>
+              <Link href="#how-it-works">
+                <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
+                  Learn More
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -192,4 +200,3 @@ export default function Home() {
     </main>
   )
 }
-

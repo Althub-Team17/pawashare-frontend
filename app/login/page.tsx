@@ -1,17 +1,21 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { EyeIcon } from "lucide-react"
+import { useToast } from "@/components/ui/use-toast"
 
 export default function LoginPage() {
+  const router = useRouter()
+  const { toast } = useToast()
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,10 +27,48 @@ export default function LoginPage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // This would be connected to your backend authentication system
-    alert("Login functionality will be implemented by the backend team")
+    setIsLoading(true)
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed")
+      }
+
+      // Store token
+      if (data.token) {
+        localStorage.setItem("token", data.token)
+      }
+
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+        variant: "default",
+      })
+
+      // Redirect to dashboard or home
+      router.push("/")
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to login",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -73,6 +115,7 @@ export default function LoginPage() {
                 placeholder="Email"
                 className="rounded-lg h-12"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -86,6 +129,7 @@ export default function LoginPage() {
                 placeholder="Password"
                 className="rounded-lg h-12 pr-10"
                 required
+                disabled={isLoading}
               />
               <button
                 type="button"
@@ -104,6 +148,7 @@ export default function LoginPage() {
                   checked={formData.rememberMe}
                   onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, rememberMe: checked as boolean }))}
                   className="h-4 w-4 rounded-sm border-gray-300"
+                  disabled={isLoading}
                 />
                 <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700">
                   Remember me
@@ -115,8 +160,12 @@ export default function LoginPage() {
             </div>
 
             {/* Submit button */}
-            <Button type="submit" className="w-full bg-green-800 hover:bg-green-900 text-white h-12 rounded-lg mb-8">
-              Log in
+            <Button 
+              type="submit" 
+              className="w-full bg-green-800 hover:bg-green-900 text-white h-12 rounded-lg mb-8"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Log in"}
             </Button>
 
             {/* Social login divider */}
@@ -131,6 +180,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 className="bg-green-800 hover:bg-green-900 text-white rounded-lg flex items-center justify-center gap-2"
+                disabled={isLoading}
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
@@ -140,6 +190,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 className="bg-green-800 hover:bg-green-900 text-white rounded-lg flex items-center justify-center gap-2"
+                disabled={isLoading}
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9.101,23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085,1.848-5.978,5.858-5.978c0.401,0,0.955,0.042,1.569,0.103 c0.645,0.06,1.405,0.241,2.273,0.541v3.461c-0.575-0.043-1.051-0.043-1.43-0.043c-1.87,0-2.511,0.811-2.511,2.47v1.026h3.803 l-0.546,3.667h-3.257v7.98H9.101z" />
