@@ -84,8 +84,8 @@ export default function LoginPage() {
           </Link>
         </div>
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ei7ooBlz9NQV35IQB8O03D6wqpPcqS.png"
-          alt="Solar panels"
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-lg8Z2A0yUPJliLzhBtwwvxLHVxV7Rz.png"
+          alt="Aerial view of solar panel farm with sun shining above"
           fill
           className="object-cover"
           priority
