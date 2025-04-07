@@ -1,6 +1,7 @@
 # PawaShare Frontend
 
 A Next.js application for connecting solar energy producers with their community.
+***please note this is a base build by the cloud team, leveraging AI tools, please see [handoff notes](HANDOFF_REPORT.md) for details***
 
 ## 🚀 Local Setup
 
