@@ -46,7 +46,7 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
           NEXT_PUBLIC_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_AUTH_DOMAIN || 'http://localhost:3000/auth' }}
 
-      # Cache Build Files for Faster Deployments
+      # Cache Build Files for Faster Future Builds
       - name: Cache Build Files
         uses: actions/cache@v3
         with:
@@ -55,12 +55,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
-      # Deploy to Vercel
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          working-directory: ./
-          vercel-args: '--prod'
+      # Vercel auto-deploys on push to main, so this step is disabled to avoid duplicate deployments
+      # # Deploy to Vercel
+      # - name: Deploy to Vercel
+      #   uses: amondnet/vercel-action@v20
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     working-directory: ./
+      #     vercel-args: '--prod'
