@@ -41,15 +41,30 @@ export default function LoginPage() {
         }),
       })
 
-      const data = await res.json()
-
       if (!res.ok) {
-        throw new Error(data.message || "Login failed")
+        // Try to parse error message if response is not ok
+        let errorMessage = "Login failed";
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (jsonError) {
+          // If response is not JSON, use status text or default message
+          errorMessage = res.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
-      // Store token
-      if (data.token) {
-        localStorage.setItem("token", data.token)
+      // If response is OK, try to parse JSON for token, but handle non-JSON success
+      let token = null;
+      try {
+        const data = await res.json();
+        if (data.token) {
+          token = data.token;
+          localStorage.setItem("token", token);
+        }
+      } catch (jsonError) {
+        // Backend might return plain text on success, ignore JSON parse error if res.ok
+        console.log("Login response was not JSON, proceeding based on OK status.");
       }
 
       toast({
@@ -63,7 +78,7 @@ export default function LoginPage() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to login",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive",
       })
     } finally {
